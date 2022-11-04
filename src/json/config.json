@@ -1,0 +1,8 @@
+{
+  "view": {
+    "zoom": 10,
+    "center": [0, 0],
+    "projection": "EPSG:4326"
+  },
+  "maxZoom": 1
+}

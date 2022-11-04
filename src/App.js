@@ -8,66 +8,26 @@ import { fromLonLat, get } from 'ol/proj';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Controls, FullScreenControl } from './components/Controls';
 
-let styles = {
-  'MultiPolygon': new Style({
-    stroke: new Stroke({
-      color: 'blue',
-      width: 1,
-    }),
-    fill: new Fill({
-      color: 'rgba(0, 0, 255, 0.1)',
-    }),
-  }),
-};
+let mapConfig = require('./json/mapConfig.json');
 
-const geojsonObject = { ... };
-const geojsonObject2 = { ... };
 
 const App = () => {
-  const [center, setCenter] = useState([0, 0]);
-  const [zoom, setZoom] = useState(9);
-  const [showLayer1, setShowLayer1] = useState(true);
-  const [showLayer2, setShowLayer2] = useState(true);
   return (
-    <div>
-      <Map center={fromLonLat(center)} zoom={zoom}>
-        <Layers>
-          <TileLayer
-            source={osm()}
-            zIndex={0}
+    <div className="App">
+        <Map {...mapConfig.view}>
+          <MapLayer type={"Tile"} source={osm()}/>
+          <MapLayer 
+            type={"Vector"} 
+            source={toVector(geometries, "EPSG:3857")} 
+            style={FeatureStyles.MultiPolygon}
           />
-          {showLayer1 && (
-            <VectorLayer
-              source={vector({ features: new GeoJSON().readFeatures(geojsonObject, { featureProjection: get('EPSG:4326')}) })}
-              style={styles.MultiPolygon}
-            />
-          )}
-          {showLayer2 && (
-            <VectorLayer
-              source={vector({ features: new GeoJSON().readFeatures(geojsonObject2, { featureProjection: get('EPSG:4326')}) })}
-              style={styles.MultiPolygon}
-            />
-          )}
-        </Layers>
-        <Controls>
-          <FullScreenControl />
-        </Controls>
-      </Map>
-      <div>
-        <input
-          type="checkbox"
-          checked={showLayer1}
-          onChange={() => setShowLayer1(event.target.checked)}
-        /> Johnson County
-      </div>
-      <div>
-        <input
-          type="checkbox"
-          checked={showLayer2}
-          onChange={event => setShowLayer2(event.target.checked)}
-        /> Wyandotte County
-      </div>
-    </div>  
+          <MapLayer 
+            type={"Vector"} 
+            source={toVector(geometry, "EPSG:3857")} 
+            style={FeatureStyles.Polygon}
+          />
+        </Map>
+    </div>
   );
 }
 
